@@ -4,8 +4,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { registerValidation, loginValidation } = require('../validation');
+const authController = require('../controller/auth');
 
-
+router.get('/', authController.getLogin);
 
 router.post('/register', async (req, res, next) => {
 
@@ -31,9 +32,9 @@ router.post('/register', async (req, res, next) => {
     }
 })
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', async (req, res) => {
 
-    const { error } = loginValidation(req.body);
+    const { error } = await loginValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     const user = User.findOne({ email: req.body.email });

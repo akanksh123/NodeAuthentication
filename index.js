@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const authRoute = require('./routes/auth');
 
 dotenv.config();
-mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, () => { console.log("DB connected") });
+mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true, useUnifiedTopology: true }, () => { console.log("DB connected") });
 
 app.use(express.json());
 app.use('/user', authRoute);
