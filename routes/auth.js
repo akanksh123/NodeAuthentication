@@ -21,34 +21,34 @@ router.post('/register', async (req, res, next) => {
     const emailExist = await User.findOne({ email: req.body.email });
     if (emailExist) res.status(400).send("Email already exist");
 
-    const salt = bcrypt.genSalt(10);
-    const hashedPassword = bcrypt.hash(req.body.password, salt);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-    const user = new User({
+    const user = await new User({
         name: req.body.name,
         email: req.body.email,
         password: hashedPassword
     });
     try {
-        const savedUser = user.save();
+        const savedUser = await user.save();
         res.send("User saved");
     } catch (err) {
         res.status(400).send(err);
     }
 })
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
 
-    const { error } = loginValidation(req.body);
+    const { error } = await loginValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const user = User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.email });
     if (!user) res.status(400).send("Account does not exist");
 
-    const validPass = bcrypt.compare(req.body.password, user.password);
+    const validPass = await bcrypt.compare(req.body.password, user.password);
     if (!validPass) return res.status(400).send('Password is incorrect');
-
-    const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY);
+    console.log("logged in");
+    const token = await jwt.sign({ _id: user._id }, process.env.SECRET_KEY);
     res.header('auth-token', token).send(token);
 
 })
